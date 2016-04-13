@@ -61,9 +61,10 @@ namespace IntelHexParser.Coshx.Com {
             }
             
             if (currentRecord.DataLength > 0 && i % 255 != 0) {
-                currentRecord.Type = 1;
                 records[currentRecordIndex] = currentRecord;
             }
+            
+            records[records.Length - 1].Type = 1;
             
             outcome = "";
             i = 0;
