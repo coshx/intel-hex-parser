@@ -26,11 +26,60 @@ namespace IntelHexParser.Coshx.Com {
         }
         
         public String Serialize(byte[] source) {
-            return null;
+            int lineNb = 0, i = 0, currentRecordIndex;
+            Record[] records;
+            String outcome;
+            Record currentRecord;
+            
+            if (source.Length == 0) {
+                return "";
+            }
+            
+            while (i < source.Length) {
+                lineNb++;
+                i += 255;
+            }
+            
+            records = new Record[lineNb];
+            currentRecord = null;
+            currentRecordIndex = 0;
+            
+            for (i = 0; i < source.Length; i++) {
+                if (i % 255 == 0) {
+                    if (currentRecord != null) {
+                        records[currentRecordIndex++] = currentRecord;
+                    }
+                    currentRecord = new Record();
+                    currentRecord.Type = 0;
+                    currentRecord.Data = new byte[255];
+                    currentRecord.Address = (ushort) (256 + (i / 255) * 12);
+                    currentRecord.DataLength = 0;
+                }
+                
+                currentRecord.Data[i % 255] = source[i];
+                currentRecord.DataLength++;
+            }
+            
+            if (currentRecord.DataLength > 0 && i % 255 != 0) {
+                currentRecord.Type = 1;
+                records[currentRecordIndex] = currentRecord;
+            }
+            
+            outcome = "";
+            i = 0;
+            foreach (Record r in records) {
+                outcome += r.ToString();
+                if (i < records.Length - 1) {
+                    outcome += Environment.NewLine;
+                }
+                i++;
+            }
+            
+            return outcome;
         }
         
         public byte[] Deserialize(String source) {
-            String[] lines = source.Split('\n');
+            String[] lines = source.Split(Environment.NewLine);
             Record[] records = new Record[lines.Length];
             byte[] outcome;
             int recordIndex = 0, finalDataSize = 0, outcomeIndex;

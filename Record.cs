@@ -1,7 +1,9 @@
+using System;
+
 namespace IntelHexParser.Coshx.Com {
     internal class Record {        
         internal int Type { get; set; }
-        internal UInt16 DataLength { get; set; }
+        internal int DataLength { get; set; }
         internal UInt16 Address { get; set; }
         internal byte[] Data { get; set; }
         
@@ -22,6 +24,20 @@ namespace IntelHexParser.Coshx.Com {
                 
                 return checksum;
             }
+        }
+        
+        internal override String ToString() {
+            String outcome;
+            
+            outcome = String.Format("{0}{1:X2}{2:X4}{3:X2}", ':', DataLength, Address, Type);
+            
+            for (int i = 0; i < DataLength; i++) {
+                outcome += String.Format("{0:X2}",  Data[i]);
+            }
+            
+            outcome += String.Format("{0:X2}",  Checksum);
+            
+            return outcome;
         }
     } 
 }
