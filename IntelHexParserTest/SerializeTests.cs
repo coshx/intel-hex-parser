@@ -12,7 +12,7 @@ namespace IntelHexParserTest
             // from http://www.keil.com/support/docs/1584/
             // current deserialize ignores starting address of first block
             var serializer = new Coshx.IntelHexParser.Serializer();
-            byte[] output = serializer.Deserialize(":10246200464C5549442050524F46494C4500464C33");
+            byte[] output = serializer.Deserialize(":10246200464C5549442050524F46494C4500464C33\r\n:00000001FF");
             byte[] expected = new byte[] { 0x46, 0x4c, 0x55, 0x49, 0x44, 0x20, 0x50, 0x52, 0x4F, 0x46, 0x49, 0x4C, 0x45, 0x00, 0x46, 0x4C };
             CollectionAssert.AreEqual(expected, output);
         }

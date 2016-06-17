@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Coshx.IntelHexParser {
     public class Serializer {
@@ -80,17 +81,19 @@ namespace Coshx.IntelHexParser {
         
         public byte[] Deserialize(String source) {
             String[] lines = source.Split(Environment.NewLine.ToCharArray());
+            lines = lines.Where(line => line.Length > 0).ToArray();
             Record[] records = new Record[lines.Length];
             byte[] outcome;
             int recordIndex = 0, finalDataSize = 0, outcomeIndex;
             
             foreach (String l in lines)
             {
-                Record current = new Record();
-                
-                if (l.Length < MinimumLineLength) {
+                if (l.Length < MinimumLineLength)
+                {
                     throw new IntelHexParserException(IntelHexParserException.Kind.INVALID_LINE);
                 }
+
+                Record current = new Record();                
                                 
                 if (l[0] != ':') {
                     throw new IntelHexParserException(IntelHexParserException.Kind.MISSING_START_CODE);
