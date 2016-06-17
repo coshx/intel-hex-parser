@@ -1,6 +1,6 @@
 using System;
 
-namespace IntelHexParser.Coshx.Com {
+namespace Coshx.IntelHexParser {
     public class IntelHexParserException: Exception {
         public enum Kind {
             INVALID_LINE,
@@ -11,8 +11,9 @@ namespace IntelHexParser.Coshx.Com {
         
         public Kind MyKind { get; internal set; }
         
-        internal IntelHexParserException(Kind kind) {
+        internal IntelHexParserException(Kind kind): base(kind.ToString()) {
             this.MyKind = kind;
         }
+
     }
 }

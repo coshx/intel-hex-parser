@@ -1,6 +1,6 @@
 using System;
 
-namespace IntelHexParser.Coshx.Com {
+namespace Coshx.IntelHexParser {
     public class Serializer {
         private const int START_CODE_OFFSET = 0;
         private const int START_CODE_LENGTH = 1;
@@ -26,7 +26,7 @@ namespace IntelHexParser.Coshx.Com {
         }
         
         public String Serialize(byte[] source) {
-            int lineNb = 0, i = 0, currentRecordIndex;
+            int i = 0, currentRecordIndex;
             Record[] records;
             String outcome;
             Record currentRecord;
@@ -34,13 +34,8 @@ namespace IntelHexParser.Coshx.Com {
             if (source.Length == 0) {
                 return "";
             }
-            
-            while (i < source.Length) {
-                lineNb++;
-                i += 255;
-            }
-            
-            records = new Record[lineNb];
+
+            records = new Record[source.Length / 255 + 2];
             currentRecord = null;
             currentRecordIndex = 0;
             
@@ -52,7 +47,7 @@ namespace IntelHexParser.Coshx.Com {
                     currentRecord = new Record();
                     currentRecord.Type = 0;
                     currentRecord.Data = new byte[255];
-                    currentRecord.Address = (ushort) (256 + (i / 255) * 12);
+                    currentRecord.Address = (ushort) ((i / 255) * (256 + 12));
                     currentRecord.DataLength = 0;
                 }
                 
@@ -63,8 +58,12 @@ namespace IntelHexParser.Coshx.Com {
             if (currentRecord.DataLength > 0 && i % 255 != 0) {
                 records[currentRecordIndex] = currentRecord;
             }
-            
-            records[records.Length - 1].Type = 1;
+
+            var lastRecord = new Record();
+            lastRecord.Type = 1;
+            lastRecord.Address = 0;
+            lastRecord.DataLength = 0;
+            records[records.Length - 1] = lastRecord;
             
             outcome = "";
             i = 0;
@@ -80,7 +79,7 @@ namespace IntelHexParser.Coshx.Com {
         }
         
         public byte[] Deserialize(String source) {
-            String[] lines = source.Split(Environment.NewLine);
+            String[] lines = source.Split(Environment.NewLine.ToCharArray());
             Record[] records = new Record[lines.Length];
             byte[] outcome;
             int recordIndex = 0, finalDataSize = 0, outcomeIndex;
